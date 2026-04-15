@@ -1,0 +1,24 @@
+# Carpetas generadas por NetBeans al compilar
+build/
+dist/
+
+# Archivos de configuración personal de NetBeans (cada quien tiene los suyos)
+nbproject/private/
+nbproject/Makefile-*.mk
+nbproject/Package-*.bash
+
+# Archivos temporales de Access que se generan cuando está abierto
+*.laccdb
+*.ldb
+
+# Archivos de configuración del editor (VS Code)
+.vscode/
+
+# Archivos comprimidos
+*.rar
+*.zip
+*.7z
+
+# Archivos de sistema de Windows
+Thumbs.db
+desktop.ini
