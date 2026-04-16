@@ -9,32 +9,20 @@ import modelo.DetalleFactura;
 import modelo.Factura;
 
 /*
- * ===== REPORTE DE FACTURA =====
+ * Esta clase muestra el reporte de la factura después de guardarla.
+ * La investigamos porque el enunciado pedía generar una factura como punto extra.
  *
- * Esta clase genera el reporte visual de la factura después de guardarla en la base de datos.
+ * Lo que descubrimos es que Java Swing ya tiene un método .print() incluido en JTextArea
+ * que abre directamente el diálogo de impresoras del sistema, sin necesidad de instalar
+ * ninguna librería adicional como JasperReports.
  *
- * ¿Cómo funciona la impresión en Java sin librerías externas?
- * Java Swing incluye en JTextComponent (padre de JTextArea) un método llamado .print()
- * que conecta directamente con la API de impresión del sistema operativo (java.awt.print).
- * Eso significa que no necesitamos instalar nada extra: con solo llamar areaTexto.print(...)
- * Java abre el diálogo de impresoras que ya tiene Windows/Mac/Linux.
+ * Usamos JDialog en vez de JFrame porque JDialog puede ser "modal",
+ * eso significa que bloquea la ventana de atrás mientras esté abierto,
+ * así el usuario no puede seguir usando el sistema hasta cerrar el reporte.
  *
- * Pasos del flujo completo:
- *   1. El usuario llena la factura en NuevaFacturaForm y presiona "Guardar".
- *   2. FacturaDAO guarda la factura y sus detalles en la base de datos Access.
- *   3. NuevaFacturaForm llama: new VistaFacturaForm(null, facturaActual).setVisible(true)
- *   4. Esta clase construye el texto del recibo en generarTextoFactura().
- *   5. El texto se muestra en un JTextArea de solo lectura.
- *   6. Si el usuario presiona "Imprimir", se llama areaTexto.print() que abre el diálogo del sistema.
- *
- * ¿Por qué usamos JDialog en vez de JFrame?
- * JDialog es una ventana secundaria que puede ser "modal", es decir, bloquea la ventana de atrás
- * mientras está abierta. Así el usuario no puede hacer nada más hasta cerrar el reporte.
- *
- * ¿Cómo se calcula el IVA?
- * Usamos el método calcularPrecioConImpuesto() que viene de la interfaz Vendible.
- * Eso demuestra el uso de interfaces: la Factura "sabe" cómo calcular su precio con impuesto
- * porque implementa esa interfaz. Es herencia múltiple a través de interfaces en Java.
+ * El IVA lo calculamos con el método calcularPrecioConImpuesto() que viene de la
+ * interfaz Vendible que implementa la clase Factura. Esto lo pusimos así para
+ * demostrar que las interfaces sirven para algo concreto en el proyecto.
  */
 public class VistaFacturaForm extends JDialog {
 
