@@ -2,13 +2,13 @@
 package vista;
 import dao.FacturaDAO;
 import dao.ProductoDAO;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import modelo.Cliente;
 import modelo.DetalleFactura;
 import modelo.Factura;
 import modelo.Producto;
-import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
-import java.util.List;
 public class NuevaFacturaForm extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(NuevaFacturaForm.class.getName());
@@ -265,9 +265,9 @@ public class NuevaFacturaForm extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
 private DefaultTableModel modeloTabla;
-    private FacturaDAO facturaDAO = new FacturaDAO();
-    private ProductoDAO productoDAO = new ProductoDAO();
-    private Factura facturaActual = new Factura();
+    private final FacturaDAO facturaDAO = new FacturaDAO();
+    private final ProductoDAO productoDAO = new ProductoDAO();
+    private final Factura facturaActual = new Factura();
 
     private void configurarTabla() {
         modeloTabla = new DefaultTableModel(
@@ -327,7 +327,7 @@ private DefaultTableModel modeloTabla;
 
             actualizarTotal();
 
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Ingrese una cantidad válida");
         }
     }
@@ -355,7 +355,13 @@ private DefaultTableModel modeloTabla;
 
         int idFactura = facturaDAO.guardarFactura(facturaActual);
         if (idFactura > 0) {
-            JOptionPane.showMessageDialog(this, "¡Factura guardada correctamente!\nNúmero de factura: " + idFactura);
+            facturaActual.setId(idFactura);
+            facturaActual.generarReporte(); // imprime resumen en consola
+
+            // Muestra la ventana de reporte con opción de imprimir
+            VistaFacturaForm vistaFactura = new VistaFacturaForm(null, facturaActual);
+            vistaFactura.setVisible(true);
+
             dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Error al guardar la factura");

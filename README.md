@@ -63,10 +63,11 @@ Cada clase define sus propios atributos y métodos según el contexto del sistem
 
 ### ✅ 4. Reporte / Factura — (Puntos extra: 2%)
 
-La generación de facturas se realiza desde `src/vista/NuevaFacturaForm.java`, la cual:
-- Permite seleccionar cliente y agregar productos con cantidad
-- Calcula subtotales, IVA (13%) y total automáticamente
-- Guarda la factura completa en la base de datos mediante `FacturaDAO`
+Al guardar una factura desde `src/vista/NuevaFacturaForm.java`, se abre automáticamente una ventana de reporte (`src/vista/VistaFacturaForm.java`) que:
+- Muestra el recibo completo con formato de tiquete: cliente, productos, cantidad, precio unitario, subtotales
+- Calcula IVA 13% y total con impuesto usando el método `calcularPrecioConImpuesto()` de la interfaz `Vendible`
+- Incluye botón **Imprimir** que abre el diálogo de impresión del sistema operativo
+- El método `generarReporte()` de la interfaz `Imprimible` registra un resumen de la factura en el logger de Java
 
 ---
 

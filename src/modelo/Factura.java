@@ -3,6 +3,8 @@ package modelo;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * Representa una factura de venta.
@@ -11,10 +13,11 @@ import java.util.List;
  * Usar interfaces nos obliga a implementar esos métodos y hace el código más ordenado.
  */
 public class Factura implements Vendible, Imprimible {
+    private static final Logger logger = Logger.getLogger(Factura.class.getName());
     private int id;          // lo asigna la base de datos
-    private Date fecha;      // se asigna automáticamente cuando se crea la factura
+    private final Date fecha;      // se asigna automáticamente cuando se crea la factura
     private Cliente cliente;
-    private List<DetalleFactura> detalles = new ArrayList<>();
+    private final List<DetalleFactura> detalles = new ArrayList<>();
     private double total;    // se va acumulando con cada producto que se agrega
 
     // Al crear la factura, guardamos la fecha y hora actuales
@@ -45,10 +48,18 @@ public class Factura implements Vendible, Imprimible {
         return total * 1.13;
     }
 
-    // Método de la interfaz Imprimible: aquí iría la lógica para imprimir
+    // Método de la interfaz Imprimible: imprime un resumen de la factura en el logger
     @Override
     public void generarReporte() {
-        // Se implementará más adelante con Jasper
-        System.out.println("Factura generada para cliente: " + cliente.getNombre());
+        if (logger.isLoggable(Level.INFO)) {
+            logger.log(Level.INFO, "=== Factura N\u00b0 {0} ===", id);
+            logger.log(Level.INFO, "Cliente: {0} | C\u00e9dula: {1}",
+                new Object[]{cliente.getNombre(), cliente.getCedula()});
+            for (DetalleFactura d : detalles) {
+                logger.log(Level.INFO, "  {0} x{1} = {2}",
+                    new Object[]{d.getProducto().getNombre(), d.getCantidad(), d.getSubtotal()});
+            }
+            logger.log(Level.INFO, "  TOTAL con IVA: {0}", calcularPrecioConImpuesto());
+        }
     }
 }
