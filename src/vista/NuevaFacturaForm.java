@@ -191,11 +191,13 @@ public class NuevaFacturaForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtCedulaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCedulaActionPerformed
-        // TODO add your handling code here:
+        // Cuando el usuario presiona Enter en el campo cédula, busca el cliente automáticamente
+        buscarCliente();
     }//GEN-LAST:event_txtCedulaActionPerformed
 
     private void txtCantidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCantidadActionPerformed
-        // TODO add your handling code here:
+        // Cuando el usuario presiona Enter en el campo cantidad, agrega el producto a la factura
+        agregarProducto();
     }//GEN-LAST:event_txtCantidadActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed

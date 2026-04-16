@@ -69,6 +69,43 @@ Al guardar una factura desde `src/vista/NuevaFacturaForm.java`, se abre automát
 - Incluye botón **Imprimir** que abre el diálogo de impresión del sistema operativo
 - El método `generarReporte()` de la interfaz `Imprimible` registra un resumen de la factura en el logger de Java
 
+#### ¿Cómo se investigó e implementó la impresión?
+
+Java Swing incluye en la clase `JTextComponent` (padre de `JTextArea`) un método llamado `.print()` que se conecta directamente con la API de impresión del sistema operativo (`java.awt.print`). Esto significa que **no se necesita ninguna librería externa** como JasperReports o iText.
+
+**Flujo completo del reporte:**
+
+```
+1. Usuario llena la factura y presiona "Guardar"
+        ↓
+2. FacturaDAO guarda la factura y sus detalles en Access (con transacción commit/rollback)
+        ↓
+3. NuevaFacturaForm crea: new VistaFacturaForm(null, facturaActual).setVisible(true)
+        ↓
+4. VistaFacturaForm.generarTextoFactura() construye el recibo como texto formateado
+        ↓
+5. El texto se muestra en un JTextArea (solo lectura, fuente Monospaced para alinear columnas)
+        ↓
+6. Si el usuario presiona "Imprimir" → areaTexto.print() abre el diálogo de impresoras del SO
+```
+
+**Decisiones de diseño:**
+- Se usó `JDialog` en lugar de `JFrame` para la ventana del reporte porque `JDialog` puede ser **modal** (bloquea la ventana anterior mientras está abierta).
+- El IVA se calcula con `factura.calcularPrecioConImpuesto()`, método de la interfaz `Vendible` — esto demuestra el uso práctico de interfaces y herencia múltiple en Java.
+- El formato del recibo usa `String.format` con especificadores de ancho (`%-18s`, `%10.2f`) para que las columnas queden alineadas en la fuente monoespaciada.
+
+**Código clave en `VistaFacturaForm.java`:**
+```java
+// Abre el diálogo de impresión del sistema operativo directamente
+btnImprimir.addActionListener(e -> {
+    try {
+        areaTexto.print(null, new MessageFormat("Página {0}"));
+    } catch (PrinterException ex) {
+        JOptionPane.showMessageDialog(this, "Error al imprimir: " + ex.getMessage());
+    }
+});
+```
+
 ---
 
 ## Estructura del Proyecto

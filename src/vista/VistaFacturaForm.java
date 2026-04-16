@@ -9,9 +9,32 @@ import modelo.DetalleFactura;
 import modelo.Factura;
 
 /*
- * Esta ventana muestra el reporte de una factura después de guardarla.
- * Tiene un botón de imprimir que manda la factura a la impresora.
- * Usamos un JDialog para que bloquee la ventana anterior mientras se muestra.
+ * ===== REPORTE DE FACTURA =====
+ *
+ * Esta clase genera el reporte visual de la factura después de guardarla en la base de datos.
+ *
+ * ¿Cómo funciona la impresión en Java sin librerías externas?
+ * Java Swing incluye en JTextComponent (padre de JTextArea) un método llamado .print()
+ * que conecta directamente con la API de impresión del sistema operativo (java.awt.print).
+ * Eso significa que no necesitamos instalar nada extra: con solo llamar areaTexto.print(...)
+ * Java abre el diálogo de impresoras que ya tiene Windows/Mac/Linux.
+ *
+ * Pasos del flujo completo:
+ *   1. El usuario llena la factura en NuevaFacturaForm y presiona "Guardar".
+ *   2. FacturaDAO guarda la factura y sus detalles en la base de datos Access.
+ *   3. NuevaFacturaForm llama: new VistaFacturaForm(null, facturaActual).setVisible(true)
+ *   4. Esta clase construye el texto del recibo en generarTextoFactura().
+ *   5. El texto se muestra en un JTextArea de solo lectura.
+ *   6. Si el usuario presiona "Imprimir", se llama areaTexto.print() que abre el diálogo del sistema.
+ *
+ * ¿Por qué usamos JDialog en vez de JFrame?
+ * JDialog es una ventana secundaria que puede ser "modal", es decir, bloquea la ventana de atrás
+ * mientras está abierta. Así el usuario no puede hacer nada más hasta cerrar el reporte.
+ *
+ * ¿Cómo se calcula el IVA?
+ * Usamos el método calcularPrecioConImpuesto() que viene de la interfaz Vendible.
+ * Eso demuestra el uso de interfaces: la Factura "sabe" cómo calcular su precio con impuesto
+ * porque implementa esa interfaz. Es herencia múltiple a través de interfaces en Java.
  */
 public class VistaFacturaForm extends JDialog {
 
