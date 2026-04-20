@@ -4,7 +4,7 @@
 **Profesora:** Kimberly Villegas Cubillo  
 **Fecha de Entrega:** 21-04-2026  
 **Valor:** 20%  
-**Integrantes:** Jose Guadamuz Elizondo
+**Integrantes:** 
 
 ---
 
