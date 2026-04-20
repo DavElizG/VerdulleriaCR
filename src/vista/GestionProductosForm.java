@@ -1,18 +1,26 @@
 package vista;
 import dao.ProductoDAO;
-import modelo.Producto;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.util.List;
+import modelo.Producto;
+
+/*
+ * Este formulario es el que usamos para gestionar los productos de la verdulería.
+ * Desde acá se pueden agregar productos nuevos, editarlos o eliminarlos.
+ * Todos los cambios se guardan directamente en la base de datos Access.
+ */
 public class GestionProductosForm extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(GestionProductosForm.class.getName());
 
-        private final ProductoDAO productoDAO = new ProductoDAO();
-        private DefaultTableModel modeloTabla;
-        private int idProductoSeleccionado = -1;
-       
-        public GestionProductosForm() {
+    // Usamos el DAO para no escribir el SQL directo acá, esa es la idea del patrón DAO
+    private final ProductoDAO productoDAO = new ProductoDAO();
+    private DefaultTableModel modeloTabla;  // controla los datos que se muestran en la tabla
+    private int idProductoSeleccionado = -1; // -1 significa que no hay ningún producto seleccionado
+
+    // En el constructor iniciamos la tabla y cargamos los productos que ya están en la BD
+    public GestionProductosForm() {
         initComponents();
         configurarTabla();
         cargarProductosEnTabla();
@@ -23,7 +31,12 @@ public class GestionProductosForm extends javax.swing.JFrame {
         btnEliminar.setEnabled(false);
     }
 
-        private void configurarTabla() {
+    /*
+     * Configuramos la tabla para que tenga las columnas correctas y no sea editable.
+     * También le ponemos un listener para que al hacer clic en una fila
+     * se carguen los datos del producto en los campos de texto.
+     */
+    private void configurarTabla() {
         modeloTabla = new DefaultTableModel(
             new String[]{"ID", "Nombre", "Precio", "Stock"}, 0
         ) {
@@ -42,6 +55,7 @@ public class GestionProductosForm extends javax.swing.JFrame {
         });
     }
 
+    // Borra todo lo que hay en la tabla y vuelve a cargar desde la base de datos
     private void cargarProductosEnTabla() {
         modeloTabla.setRowCount(0);
         List<Producto> lista = productoDAO.listarTodos();
@@ -57,6 +71,11 @@ public class GestionProductosForm extends javax.swing.JFrame {
         }
     }
 
+    /*
+     * Cuando el usuario hace clic en una fila de la tabla, este método
+     * carga los datos de ese producto en los campos de texto para poder editarlo.
+     * También cambia el texto del botón de "Guardar" a "Actualizar".
+     */
     private void seleccionarProducto() {
         int fila = tblProductos.getSelectedRow();
         if (fila == -1) return;
@@ -227,6 +246,7 @@ public class GestionProductosForm extends javax.swing.JFrame {
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         String nombre = txtNombre.getText().trim();
 
+        // Validamos que el nombre no esté vacío antes de guardar
         if (nombre.isEmpty()) {
             JOptionPane.showMessageDialog(this, "El nombre del producto es obligatorio");
             return;
@@ -241,13 +261,13 @@ public class GestionProductosForm extends javax.swing.JFrame {
             boolean resultado;
 
             if (idProductoSeleccionado == -1) {
-                // Modo Agregar
+                // Si no hay producto seleccionado, es un producto nuevo
                 resultado = productoDAO.insertar(producto);
                 if (resultado) {
                     JOptionPane.showMessageDialog(this, "Producto agregado correctamente");
                 }
             } else {
-                // Modo Actualizar
+                // Si hay un producto seleccionado, actualizamos el existente
                 resultado = productoDAO.actualizar(producto);
                 if (resultado) {
                     JOptionPane.showMessageDialog(this, "Producto actualizado correctamente");
@@ -269,7 +289,8 @@ public class GestionProductosForm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Precio y Stock deben ser números válidos");
         }
     }//GEN-LAST:event_btnGuardarActionPerformed
-private void limpiarCampos() {
+    // Deja todos los campos de texto en blanco para registrar un producto nuevo
+    private void limpiarCampos() {
         txtNombre.setText("");
         txtPrecio.setText("");
         txtStock.setText("");
@@ -295,6 +316,7 @@ private void limpiarCampos() {
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         int fila = tblProductos.getSelectedRow();
+        // Pedimos confirmación antes de eliminar para evitar borrados accidentales
         if (fila == -1) {
             JOptionPane.showMessageDialog(this, "Seleccione un producto para eliminar");
             return;

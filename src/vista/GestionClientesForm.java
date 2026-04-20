@@ -1,18 +1,26 @@
 package vista;
 
 import dao.ClienteDAO;
-import modelo.Cliente;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.util.List;
+import modelo.Cliente;
 
+/*
+ * Este formulario gestiona los clientes de la verdulería.
+ * Permite agregar clientes nuevos, editarlos y eliminarlos.
+ * Funciona igual que el de productos pero guarda en la tabla Clientes de la BD.
+ */
 public class GestionClientesForm extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(GestionClientesForm.class.getName());
-private final ClienteDAO clienteDAO = new ClienteDAO();
-    private DefaultTableModel modeloTabla;
-    private String cedulaSeleccionada = null;
-    
+
+    // DAO para acceder a la base de datos sin poner SQL directo en el formulario
+    private final ClienteDAO clienteDAO = new ClienteDAO();
+    private DefaultTableModel modeloTabla;       // modelo que maneja los datos de la tabla visual
+    private String cedulaSeleccionada = null;    // null significa que no hay cliente seleccionado
+
+    // Iniciamos los componentes y cargamos los clientes existentes en la tabla
     public GestionClientesForm() {
         initComponents();
         configurarTabla();
@@ -25,6 +33,11 @@ private final ClienteDAO clienteDAO = new ClienteDAO();
         btnEliminar.setEnabled(false);
     }
 
+  /*
+     * Configuramos las columnas de la tabla y desactivamos que se pueda editar
+     * directamente en la tabla — los cambios solo se hacen desde los campos de texto.
+     * El listener detecta cuando el usuario hace clic en una fila.
+     */
   private void configurarTabla() {
         modeloTabla = new DefaultTableModel(
             new String[]{"Cédula", "Nombre", "Teléfono", "Dirección", "Email"}, 0
@@ -44,6 +57,7 @@ private final ClienteDAO clienteDAO = new ClienteDAO();
         });
     }
 
+    // Limpia la tabla y la vuelve a llenar con los datos actuales de la BD
     private void cargarClientesEnTabla() {
         modeloTabla.setRowCount(0);
         List<Cliente> lista = clienteDAO.listarTodos();
@@ -60,6 +74,10 @@ private final ClienteDAO clienteDAO = new ClienteDAO();
         }
     }
 
+    /*
+     * Cuando se hace clic en una fila, cargamos los datos del cliente en los campos
+     * y bloqueamos el campo cédula para que no se pueda cambiar al editar.
+     */
     private void seleccionarCliente() {
         int fila = tblClientes.getSelectedRow();
         if (fila == -1) return;
@@ -79,6 +97,7 @@ private final ClienteDAO clienteDAO = new ClienteDAO();
         // Deshabilitar edición de cédula cuando se está editando
         txtCedula.setEditable(false);
     }
+    // Vacía todos los campos del formulario para registrar un cliente nuevo
     private void limpiarCampos() {
         txtCedula.setText("");
         txtNombre.setText("");
@@ -255,6 +274,7 @@ private final ClienteDAO clienteDAO = new ClienteDAO();
    String cedula = txtCedula.getText().trim();
         String nombre = txtNombre.getText().trim();
 
+        // La cédula y el nombre son los campos mínimos obligatorios
         if (cedula.isEmpty() || nombre.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Cédula y Nombre son obligatorios", 
                 "Campos requeridos", JOptionPane.WARNING_MESSAGE);
@@ -272,13 +292,13 @@ private final ClienteDAO clienteDAO = new ClienteDAO();
         boolean resultado;
 
         if (cedulaSeleccionada == null) {
-            // Modo Agregar
+            // Sin selección = cliente nuevo
             resultado = clienteDAO.insertar(cliente);
             if (resultado) {
                 JOptionPane.showMessageDialog(this, "Cliente agregado correctamente");
             }
         } else {
-            // Modo Actualizar (Editar)
+            // Con selección = actualizamos el cliente existente
             resultado = clienteDAO.actualizar(cliente);
             if (resultado) {
                 JOptionPane.showMessageDialog(this, "Cliente actualizado correctamente");
@@ -314,6 +334,7 @@ private final ClienteDAO clienteDAO = new ClienteDAO();
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
        int fila = tblClientes.getSelectedRow();
+        // Mostramos un cuadro de confirmación para que no se elimine por accidente
         if (fila == -1) {
             JOptionPane.showMessageDialog(this, "Seleccione un cliente para eliminar");
             return;
@@ -340,7 +361,7 @@ private final ClienteDAO clienteDAO = new ClienteDAO();
             } else {
                 JOptionPane.showMessageDialog(this, "No se pudo eliminar el cliente");
             }
-        } // TODO add your handling code here:
+        } // el comentario TODO original se puede ignorar, el código ya está completo
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed

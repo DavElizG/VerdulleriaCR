@@ -1,10 +1,17 @@
 package vista;
 import javax.swing.*;
 
+/*
+ * Esta es la ventana principal del sistema.
+ * Desde acá el usuario puede navegar a las tres secciones:
+ * gestión de clientes, gestión de productos y crear facturas.
+ * La usamos como menú de inicio, igual a como funciona un menú en la mayoría de sistemas.
+ */
 public class MainFrame extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(MainFrame.class.getName());
 
+    // Centramos la ventana en la pantalla y le ponemos el título del sistema
     public MainFrame() {
         initComponents();
         setLocationRelativeTo(null);
@@ -52,14 +59,17 @@ public class MainFrame extends javax.swing.JFrame {
     
     
     
+    // Abre el formulario de gestión de productos en una ventana nueva
     private void btnProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductosActionPerformed
         new GestionProductosForm().setVisible(true);
     }//GEN-LAST:event_btnProductosActionPerformed
 
+    // Abre el formulario para crear una nueva factura
     private void btnNuevaFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevaFacturaActionPerformed
       new NuevaFacturaForm().setVisible(true);
     }//GEN-LAST:event_btnNuevaFacturaActionPerformed
 
+    // Abre el formulario de gestión de clientes
     private void btnClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClientesActionPerformed
         new GestionClientesForm().setVisible(true);
     }//GEN-LAST:event_btnClientesActionPerformed

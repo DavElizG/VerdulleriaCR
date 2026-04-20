@@ -9,6 +9,12 @@ import modelo.Cliente;
 import modelo.DetalleFactura;
 import modelo.Factura;
 import modelo.Producto;
+
+/*
+ * Este formulario es donde se crea una factura nueva.
+ * El usuario busca al cliente por cédula, agrega los productos con cantidad,
+ * y al guardar se registra todo en la base de datos con IVA calculado automáticamente.
+ */
 public class NuevaFacturaForm extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(NuevaFacturaForm.class.getName());
@@ -266,11 +272,12 @@ public class NuevaFacturaForm extends javax.swing.JFrame {
     private javax.swing.JTextField txtCedula;
     // End of variables declaration//GEN-END:variables
 
-private DefaultTableModel modeloTabla;
+private DefaultTableModel modeloTabla;  // modelo que controla las filas del detalle de factura
     private final FacturaDAO facturaDAO = new FacturaDAO();
     private final ProductoDAO productoDAO = new ProductoDAO();
-    private final Factura facturaActual = new Factura();
+    private final Factura facturaActual = new Factura(); // la factura que se va armando
 
+    // Configuramos las columnas de la tabla del detalle de la factura
     private void configurarTabla() {
         modeloTabla = new DefaultTableModel(
             new String[]{"ID", "Producto", "Precio", "Cantidad", "Subtotal"}, 0
@@ -283,6 +290,7 @@ private DefaultTableModel modeloTabla;
         tblDetalles.setModel(modeloTabla);
     }
 
+    // Llena el combo de productos con los que hay en la BD para que el usuario pueda elegir
     private void cargarProductos() {
         cmbProductos.removeAllItems();
         List<Producto> productos = productoDAO.listarTodos();
@@ -291,6 +299,7 @@ private DefaultTableModel modeloTabla;
         }
     }
 
+    // Busca el cliente por cédula en la BD y muestra su nombre si lo encuentra
     private void buscarCliente() {
         String cedula = txtCedula.getText().trim();
         if (cedula.isEmpty()) {
@@ -307,6 +316,10 @@ private DefaultTableModel modeloTabla;
         }
     }
 
+    /*
+     * Toma el producto seleccionado en el combo y la cantidad escrita,
+     * crea un DetalleFactura y lo agrega tanto al objeto Factura como a la tabla visual.
+     */
     private void agregarProducto() {
         if (facturaActual.getCliente() == null) {
             JOptionPane.showMessageDialog(this, "Primero busque un cliente");
@@ -334,6 +347,7 @@ private DefaultTableModel modeloTabla;
         }
     }
 
+    // Elimina la fila seleccionada tanto de la tabla como del objeto Factura
     private void eliminarItem() {
         int fila = tblDetalles.getSelectedRow();
         if (fila == -1) {
@@ -345,10 +359,15 @@ private DefaultTableModel modeloTabla;
         actualizarTotal();
     }
 
+    // Actualiza el label del total cada vez que se agrega o elimina un producto
     private void actualizarTotal() {
         lblTotal.setText(String.format("Total: ₡ %.2f", facturaActual.getTotal()));
     }
 
+    /*
+     * Guarda la factura completa en la BD y abre la ventana del reporte.
+     * Si algo falla, se muestra un mensaje de error sin cerrar el formulario.
+     */
     private void guardarFactura() {
         if (facturaActual.getCliente() == null || facturaActual.getDetalles().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Debe tener cliente y al menos un producto");
